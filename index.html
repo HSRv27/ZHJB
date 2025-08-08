@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>梧州珍宝巴士</title>
+    <style>
+        :root {
+            --primary-bg: #f8f8f8;
+            --primary-text: #333;
+            --nav-bg: #f8f8f8;
+            --nav-item-bg: #1E90FF;
+            --nav-item-text: white;
+            --card-bg: #ffffff;
+            --active-item-bg: #1E90FF;
+            --active-item-text: white;
+            --back-btn-bg: #1E90FF;
+            --back-btn-text: white;
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --error-color: #e74c3c;
+            --success-color: #2ecc71;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--primary-bg);
+            color: var(--primary-text);
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            padding: 15px;
+            text-align: center;
+            background-color: var(--nav-bg);
+            border-bottom: 1px solid #e7e7e7;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-text);
+        }
+
+        .content {
+            padding: 15px;
+            min-height: 60vh;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .message-header h1 {
+            margin: 0;
+            font-size: 20px;
+            color: var(--primary-text);
+            cursor: pointer;
+        }
+
+        #real-time-clock {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--primary-text);
+        }
+
+        .message-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message-item {
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .route-number {
+            font-size: 18px;
+            font-weight: bold;
+            width: 50px;
+            text-align: center;
+            color: var(--primary-text);
+        }
+
+        .route-info {
+            flex-grow: 1;
+            padding: 0 10px;
+            color: var(--primary-text);
+        }
+
+        .next-trip {
+            font-weight: bold;
+            color: var(--nav-item-bg);
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background-color: var(--nav-bg);
+            border-top: 1px solid #e7e7e7;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .footer-item {
+            padding: 10px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: var(--primary-text);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+        }
+
+        .footer-item.active {
+            background-color: var(--active-item-bg);
+            color: var(--active-item-text);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .footer-content {
+            padding: 15px;
+            margin-bottom: 70px;
+        }
+
+        .footer-content .footer-item {
+            display: none;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        .theme-selector {
+            margin-top: 20px;
+        }
+
+        .theme-option {
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-option:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .theme-yellow {
+            background: linear-gradient(45deg, #FFED8F, yellow);
+        }
+
+        .theme-blue {
+            background: linear-gradient(45deg, #87CEEB, #1E90FF);
+            color: white;
+        }
+
+        .theme-red {
+            background: linear-gradient(45deg, #FF0000, red);
+            color: white;
+        }
+
+        .theme-gray {
+            background: linear-gradient(45deg, #333333, #666666);
+            color: white;
+        }
+
+        .theme-green {
+            background: linear-gradient(45deg, #00FF00, green);
+            color: white;
+        }
+
+        .backup-query {
+            display: block;
+            margin-top: 20px;
+            padding: 12px 15px;
+            border-radius: 5px;
+            background-color: var(--back-btn-bg);
+            color: var(--back-btn-text);
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .backup-query:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .backup-query-2 {
+            display: block;
+            margin-top: 20px;
+            padding: 12px 15px;
+            border-radius: 5px;
+            background-color: var(--back-btn-bg);
+            color: var(--back-btn-text);
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .backup-query-2:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .logout-btn {
+            display: block;
+            margin-top: 20px;
+            padding: 12px 15px;
+            border-radius: 5px;
+            background-color: #e74c3c;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            background-color: #c0392b;
+        }
+
+        .traffic-message {
+            padding: 20px;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        /* 登录系统样式 */
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin: 15px auto;
+            display: none;
+        }
+        
+        .login-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .login-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .login-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .company-logo {
+            width: 60px;
+            height: 60px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .company-logo img {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .login-form {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #95a5a6;
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+        
+        .remember-me input {
+            margin-right: 8px;
+        }
+        
+        .forgot-password a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .login-footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+        }
+        
+        .login-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .error-message {
+            color: var(--error-color);
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .security-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #7f8c8d;
+            display: flex;
+            align-items: center;
+        }
+        
+        .security-info i {
+            margin-right: 10px;
+            color: var(--primary-color);
+            font-size: 16px;
+        }
+
+        /* 进度条样式 */
+        .progress-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+        
+        .progress-container {
+            width: 80%;
+            max-width: 500px;
+            background-color: #e0e0e0;
+            border-radius: 20px;
+            padding: 3px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .progress-bar {
+            height: 30px;
+            border-radius: 15px;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: bold;
+            box-sizing: border-box;
+        }
+        
+        .loading-text {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .complete {
+            background: linear-gradient(90deg, #2196F3, #00BCD4);
+        }
+
+        /* 用户名修改界面 */
+        .username-form {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .username-form h4 {
+            margin-bottom: 15px;
+            color: var(--primary-text);
+        }
+        
+        .username-form .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .username-form .btn {
+            margin-top: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .footer-item {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            
+            .header-title {
+                font-size: 20px;
+            }
+            
+            .login-container {
+                margin: 15px;
+            }
+            
+            .login-header {
+                padding: 20px 15px;
+            }
+            
+            .login-form {
+                padding: 20px 15px;
+            }
+            
+            .login-header h1 {
+                font-size: 22px;
+            }
+            
+            .form-control {
+                padding: 10px 12px;
+            }
+            
+            .btn {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录系统 -->
+    <div class="login-container" id="loginSystem">
+        <div class="login-header">
+            <div class="company-logo">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMzQ5OGRiIj48cGF0aCBkPSJNMTIgMkM2LjQ4NiAyIDIgNi40ODYgMiAxMnM0LjQ4NiAxMCAxMCAxMCAxMC00LjQ4NiAxMC0xMFMxNy41MTQgMiAxMiAyem0wIDE4Yy00LjQxMSAwLTgtMy41ODktOC04IDAtNC40MTEgMy41ODktOCA4LTggNC40MTEgMCA4IDMuNTg5IDggOCAwIDQuNDExLTMuNTg5IDgtOCA4em0yLTEyaC00djhoNHYtOHoiLz48L3N2Zz4=" alt="公司标志">
+            </div>
+            <h1>员工登录系统</h1>
+            <p>请使用您的员工账号登录</p>
+        </div>
+        
+        <form class="login-form" id="loginForm">
+            <div class="form-group">
+                <label for="employeeId">员工ID</label>
+                <input type="text" id="employeeId" class="form-control" placeholder="输入您的员工ID" required>
+                <div class="error-message" id="idError">请输入有效的员工ID</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">密码</label>
+                <div class="password-container">
+                    <input type="password" id="password" class="form-control" placeholder="输入您的密码" required>
+                    <span class="toggle-password" id="togglePassword">👁️</span>
+                </div>
+                <div class="error-message" id="passwordError">密码必须至少8个字符，包含数字和大小写字母</div>
+            </div>
+            
+            <div class="remember-forgot">
+                <div class="remember-me">
+                    <input type="checkbox" id="rememberMe">
+                    <label for="rememberMe">记住我</label>
+                </div>
+                <div class="forgot-password">
+                    <a href="#">忘记密码?</a>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">登录</button>
+
+            <div class="error-message" id="loginError">账号或密码错误</div>
+
+            <div class="security-info">
+                <i>🔒</i>
+                <span>我们使用256位SSL加密保护您的登录信息</span>
+            </div>
+        </form>
+
+        <div class="login-footer">
+            <p>黄水日©2025～2023. 保留所有权利 . <a href="#">隐私政策</a></p>
+        </div>
+    </div>
+
+    <!-- 进度条加载动画 -->
+    <div class="progress-overlay" id="progressOverlay">
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar">0%</div>
+        </div>
+        <div class="loading-text" id="loadingText">正在加载系统，请稍候...</div>
+    </div>
+
+    <!-- 主系统内容 -->
+    <div id="mainSystem" style="display: none;">
+        <div class="header">
+            <div class="header-title">梧州珍宝巴士</div>
+        </div>
+
+        <div class="content">
+            <div class="message-header">
+                <h1 onclick="showTrafficMessage()">交通消息（点击查看）</h1>
+                <div id="real-time-clock">--14:35:35--</div>
+            </div>
+            <div class="message-list">
+                <div class="message-item">
+                    <div class="route-number">7路</div>
+                    <div class="route-info">开往中山路</div>
+                    <div class="next-trip">下一班 暂停服务</div>
+                </div>
+                <div class="message-item">
+                    <div class="route-number">12路</div>
+                    <div class="route-info">开往中山路</div>
+                    <div class="next-trip">下一班 暂停服务</div>
+                </div>
+                <div class="message-item">
+                    <div class="route-number">3路</div>
+                    <div class="route-info">开往云龙桥北</div>
+                    <div class="next-trip">下一班 末班车已过</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="javascript:void(0);" class="footer-item active" onclick="showContent('home')">首页</a>
+            <a href="javascript:void(0);" class="footer-item" onclick="showContent('about')">公司简介</a>
+            <a href="https://mobile.busonline.cc/BusOnline/WeChat/common/wuzhou/index.html" class="footer-item" target="_blank" onclick="return handleExternalLink('home')">公交查询</a>
+            <a href="javascript:void(0);" class="footer-item" onclick="showContent('services')">公司业务</a>
+            <a href="javascript:void(0);" class="footer-item" onclick="showContent('profile')">我</a>
+        </div>
+
+        <div class="footer-content">
+            <div class="footer-item" id="about" style="display: none;">
+                <h3>公司简介</h3>
+                <p>梧州珍宝巴士</p>
+                <p>中国广西壮族自治区梧州市境内公交系统</p>
+                <p>梧州珍宝巴士（WUZHOUJUMBOBUS）是指服务于中国广西壮族自治区梧州市范围内运营的城市公共交通运输系统，为梧州主要公共交通方式之一，其首条公交线路开通于1959年12月。
+    截至2019年12月， 梧州珍宝巴士共拥有运营公交车辆578辆，开通公交线路54条，运营线路总长度870公里，日均客运量约15万人次。</p>
+            </div>
+            <div class="footer-item" id="services" style="display: none;">
+                <h3>公司业务</h3>
+                <ul>
+                    <li><a href="#">包车定制</a> - 更多车辆任您选择</li>
+                    <li><a href="#">校园定制</a> - 更多车辆任您选择</li>
+                    <li><a href="#">企业定制</a> - 更多车辆任您选择</li>
+                    <li><a href="#">其他业务</a> - 更多车辆任您选择</li>
+                </ul>
+            </div>
+            <div class="footer-item" id="profile" style="display: none;">
+                <h3>个人中心</h3>
+                <div class="username-form">
+                    <h4>修改用户名</h4>
+                    <div class="form-group">
+                        <label for="username">新用户名</label>
+                        <input type="text" id="username" class="form-control" placeholder="输入新用户名">
+                    </div>
+                    <button class="btn btn-primary" onclick="updateUsername()">保存更改</button>
+                </div>
+                <div class="theme-selector">
+                    <h4>选择主题颜色</h4>
+                    <div class="theme-option theme-yellow" onclick="changeTheme('yellow')">经典珍宝</div>
+                    <div class="theme-option theme-blue" onclick="changeTheme('blue')">时代城投</div>
+                    <div class="theme-option theme-red" onclick="changeTheme('red')">红色传承</div>
+                    <div class="theme-option theme-gray" onclick="changeTheme('gray')">宇宙星系</div>
+                    <div class="theme-option theme-green" onclick="changeTheme('green')">怀旧金晖</div>
+                </div>
+                <div style="text-align: center; margin-top: 20px; color: var(--primary-text);">
+                    黄水日©<br>2025～2026
+                </div>
+                <a href="https://sk.lishewen.com/tdplan" target="_blank" class="backup-query" onclick="return handleExternalLink('home')">备用公交查询</a>
+                <a href="https://map.baidu.com/mobile/webapp/index/index/#search/search/foo=bar&qt=s&wd=%E5%85%AC%E4%BA%A4%E7%AB%99&c=304&searchFlag=sort&center_rank=1&nb_x=12391285.92&nb_y=2673984.42&da_src=indexnearbypg.nearby/center_name=%E6%88%91%E7%9A%84%E4%BD%8D%E7%BD%AE" target="_blank" class="backup-query-2" onclick="return handleExternalLink('home')">备用公交查询2</a>
+                <button class="logout-btn" onclick="logout()">退出登陆</button>
+            </div>
+            <div class="footer-item" id="traffic-message" style="display: none;">
+                <div class="traffic-message">
+                    <h3>公交线路调整通知</h3>
+                    <p>根据2025年2月20日梧州市公安局交通警察支队发布的《龙圩区苍海大道围蔽施工通告》，从2025年3月10日起，预计至2025年12月4日24时止，对苍海大道（西江大桥至新南梧公路交接处）路段进行道路半幅交替围蔽施工；受此影响，以下公交线路作临时调整：
+                  
+                    <p>48路
+                    <p>往梧州南站方向：从高旺路起临时改道西江大桥、竹湾路、西堤路、西江三桥，恩义小学站后的站点按原线路行驶，暂不停靠商贸学校站、预备役工兵团站。增加停靠盈洋家具广场站，丰业装饰市场站、大岭岗站。
+                    <p>往梧州市区方向：从政贤路广场站起临时改道苍梧大道、广信路，商贸学校站后的站点按原线路行驶，暂不停靠苍梧大道站、恩义小学站、预备役工兵团站。
+                  
+                    <p>49路
+                    <p>往梧州南站方向：从中医院站起临时改道西堤路、西江三桥，恩义小学站后的站点按原线路行驶，暂不停靠大岭岗站、丰业装饰市场站、盈洋家具广场站、商贸学校站、预备役工兵团站。
+                    <p>往梧州市区方向：从政贤路广场站起临时改道苍梧大道、广信路，商贸学校站后的站点按原线路行驶，暂不停靠苍梧大道站、恩义小学站、预备役工兵团站。
+                  
+                    <p>303路
+                    <p>往梧州南站方向：从七中站起临时改道西堤路、西江三桥，恩义小学站后的站点按原线路行驶，暂不停靠大岭岗站、丰业装饰市场站、盈洋家具广场站、商贸学校站、预备役工兵团站。
+                    <p>往梧州市区方向：从广信路站起临时改道广信路，商贸学校站后的站点按原线路行驶，暂不停靠龙湖小学站、工商技师学院站、恩义小学站、预备役工兵团站。增加停靠工商技师学院（北门）站。
+                  
+                    <p>307路
+                    <p>往梧州市区方向：从政贤路广场站起临时改道苍梧大道、广信路，恩义小学站后的站点按原线路行驶，暂不停靠苍梧大道站。
+                  
+                    <p>520路
+                    <p>往梧州南站方向：从恩义小学站起临时改道苍海大道、西南大道，城南大道路口站后的站点按原线路行驶，暂不停靠园博园站、苍海小学站、苍海公园站。增加停靠政贤路口站、苍海湖旅游区站。
+                    <p>旅游专线1
+                    <p>往雪立方冰雪世界方向：从恩义小学站起临时改道苍海大道、西南大道至雪立方冰雪世界，暂不停靠园博园站、苍海小学站、苍海公园站、苍海一路站、苍海二路站。增加停靠政贤路口站、苍海湖旅游区站。
+                 
+                    <p>高铁快线
+                    <p>往梧州南站方向：从西堤冬湖路口站起临时改道西堤路、西江三桥至梧州南站。
+                 
+                    <p>机场快线
+                    <p>往西江机场方向方向：从江滨国际大酒店站起临时改道西堤路、西江三桥至梧州南站、西江机场。
+                    <p>上述公交线路将根据现场交通管制情况临时调整线路走向，如有乘坐飞机、高铁需求的群众，敬请提前安排公交出行时间，以免耽误行程。
+
+    请乘客相互转知</p>
+                    <p>调整时间：2025年3月10日起</p>
+                    <p>请乘客们提前规划出行路线，给您带来不便敬请谅解。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 检查登录状态
+        function checkLoginStatus() {
+            return localStorage.getItem('isLoggedIn') === 'true';
+        }
+
+        // 处理外部链接点击
+        function handleExternalLink(returnTo) {
+            if (checkLoginStatus()) {
+                localStorage.setItem('returnTo', returnTo);
+                return true;
+            }
+            return false;
+        }
+
+        // 检查返回时要显示的页面
+        function checkReturnPage() {
+            const returnTo = localStorage.getItem('returnTo');
+            if (returnTo) {
+                showContent(returnTo);
+                localStorage.removeItem('returnTo');
+            }
+        }
+
+        // 显示登录系统
+        document.addEventListener('DOMContentLoaded', function() {
+            if (checkLoginStatus()) {
+                document.getElementById('loginSystem').style.display = 'none';
+                document.getElementById('mainSystem').style.display = 'block';
+                showContent('home');
+            } else {
+                document.getElementById('loginSystem').style.display = 'block';
+            }
+            
+            // 初始化时钟
+            setInterval(showRealTimeClock, 1000);
+            showRealTimeClock();
+            
+            // 检查是否有保存的主题偏好
+            const savedTheme = localStorage.getItem('busTheme');
+            if (savedTheme) {
+                changeTheme(savedTheme);
+            }
+
+            // 检查返回页面
+            checkReturnPage();
+        });
+
+        // 显示内容区域
+        function showContent(id) {
+            // 隐藏所有内容区域
+            const contentItems = document.querySelectorAll('.footer-content .footer-item');
+            contentItems.forEach(item => item.style.display = 'none');
+            
+            // 更新导航栏活动状态
+            const navItems = document.querySelectorAll('.footer .footer-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            
+            if (id === 'home') {
+                // 显示首页内容
+                document.querySelector('.content').style.display = 'block';
+                // 设置首页导航项为活动状态
+                document.querySelector('.footer .footer-item:nth-child(1)').classList.add('active');
+            } else {
+                // 显示对应内容区域
+                document.getElementById(id).style.display = 'block';
+                // 设置对应导航项为活动状态
+                const targetNavItem = document.querySelector(`.footer .footer-item[onclick="showContent('${id}')"]`);
+                if (targetNavItem) {
+                    targetNavItem.classList.add('active');
+                }
+                // 隐藏主内容区域
+                document.querySelector('.content').style.display = 'none';
+            }
+        }
+
+        // 显示交通消息
+        function showTrafficMessage() {
+            // 隐藏主内容区域
+            document.querySelector('.content').style.display = 'none';
+            
+            // 隐藏所有内容区域
+            const contentItems = document.querySelectorAll('.footer-content .footer-item');
+            contentItems.forEach(item => item.style.display = 'none');
+            
+            // 显示交通消息区域
+            document.getElementById('traffic-message').style.display = 'block';
+            
+            // 更新导航栏活动状态
+            const navItems = document.querySelectorAll('.footer .footer-item');
+            navItems.forEach(item => item.classList.remove('active'));
+        }
+
+        // 主题切换功能
+        function changeTheme(theme) {
+            switch(theme) {
+                case 'yellow':
+                    document.documentElement.style.setProperty('--primary-bg', '#FFF9C4');
+                    document.documentElement.style.setProperty('--primary-text', '#000000');
+                    document.documentElement.style.setProperty('--nav-bg', '#FFEB3B');
+                    document.documentElement.style.setProperty('--nav-item-bg', '#FFC107');
+                    document.documentElement.style.setProperty('--nav-item-text', '#FFFFFF');
+                    document.documentElement.style.setProperty('--card-bg', '#FFFFFF');
+                    document.documentElement.style.setProperty('--active-item-bg', '#FFC107');
+                    document.documentElement.style.setProperty('--active-item-text', '#FFFFFF');
+                    document.documentElement.style.setProperty('--back-btn-bg', '#FFC107');
+                    document.documentElement.style.setProperty('--back-btn-text', '#FFFFFF');
+                    document.documentElement.style.setProperty('--primary-color', '#FFC107');
+                    document.documentElement.style.setProperty('--secondary-color', '#FFA000');
+                    break;
+                case 'blue':
+                    document.documentElement.style.setProperty('--primary-bg', '#E3F2FD');
+                    document.documentElement.style.setProperty('--primary-text', '#000000');
+                    document.documentElement.style.setProperty('--nav-bg', '#2196F3');
+                    document.documentElement.style.setProperty('--nav-item-bg', '#1976D2');
+                    document.documentElement.style.setProperty('--nav-item-text', '#FFFFFF');
+                    document.documentElement.style.setProperty('--card-bg', '#FFFFFF');
+                    document.documentElement.style.setProperty('--active-item-bg', '#1976D2');
+                    document.documentElement.style.setProperty('--active-item-text', '#FFFFFF');
+                    document.documentElement.style.setProperty('--back-btn-bg', '#1976D2');
+                    document.documentElement.style.setProperty('--back-btn-text', '#FFFFFF');
+                    document.documentElement.style.setProperty('--primary-color', '#2196F3');
+                    document.documentElement.style.setProperty('--secondary-color', '#1976D2');
+                    break;
+                case 'red':
+                    document.documentElement.style.setProperty('--primary-bg', '#FFEBEE');
+                    document.documentElement.style.setProperty('--primary-text', '#000000');
+                    document.documentElement.style.setProperty('--nav-bg', '#F44336');
+                    document.documentElement.style.setProperty('--nav-item-bg', '#D32F2F');
+                    document.documentElement.style.setProperty('--nav-item-text', '#FFFFFF');
+                    document.documentElement.style.setProperty('--card-bg', '#FFFFFF');
+                    document.documentElement.style.setProperty('--active-item-bg', '#D32F2F');
+                    document.documentElement.style.setProperty('--active-item-text', '#FFFFFF');
+                    document.documentElement.style.setProperty('--back-btn-bg', '#D32F2F');
+                    document.documentElement.style.setProperty('--back-btn-text', '#FFFFFF');
+                    document.documentElement.style.setProperty('--primary-color', '#F44336');
+                    document.documentElement.style.setProperty('--secondary-color', '#D32F2F');
+                    break;
+                case 'gray':
+                    document.documentElement.style.setProperty('--primary-bg', '#424242');
+                    document.documentElement.style.setProperty('--primary-text', '#FFFFFF');
+                    document.documentElement.style.setProperty('--nav-bg', '#212121');
+                    document.documentElement.style.setProperty('--nav-item-bg', '#616161');
+                    document.documentElement.style.setProperty('--nav-item-text', '#FFFFFF');
+                    document.documentElement.style.setProperty('--card-bg', '#616161');
+                    document.documentElement.style.setProperty('--active-item-bg', '#616161');
+                    document.documentElement.style.setProperty('--active-item-text', '#FFFFFF');
+                    document.documentElement.style.setProperty('--back-btn-bg', '#616161');
+                    document.documentElement.style.setProperty('--back-btn-text', '#FFFFFF');
+                    document.documentElement.style.setProperty('--primary-color', '#616161');
+                    document.documentElement.style.setProperty('--secondary-color', '#424242');
+                    break;
+                case 'green':
+                    document.documentElement.style.setProperty('--primary-bg', '#E8F5E9');
+                    document.documentElement.style.setProperty('--primary-text', '#000000');
+                    document.documentElement.style.setProperty('--nav-bg', '#4CAF50');
+                    document.documentElement.style.setProperty('--nav-item-bg', '#2E7D32');
+                    document.documentElement.style.setProperty('--nav-item-text', '#FFFFFF');
+                    document.documentElement.style.setProperty('--card-bg', '#FFFFFF');
+                    document.documentElement.style.setProperty('--active-item-bg', '#2E7D32');
+                    document.documentElement.style.setProperty('--active-item-text', '#FFFFFF');
+                    document.documentElement.style.setProperty('--back-btn-bg', '#2E7D32');
+                    document.documentElement.style.setProperty('--back-btn-text', '#FFFFFF');
+                    document.documentElement.style.setProperty('--primary-color', '#4CAF50');
+                    document.documentElement.style.setProperty('--secondary-color', '#2E7D32');
+                    break;
+                default:
+                    // 默认主题
+                    document.documentElement.style.setProperty('--primary-bg', '#f8f8f8');
+                    document.documentElement.style.setProperty('--primary-text', '#333');
+                    document.documentElement.style.setProperty('--nav-bg', '#f8f8f8');
+                    document.documentElement.style.setProperty('--nav-item-bg', '#1E90FF');
+                    document.documentElement.style.setProperty('--nav-item-text', 'white');
+                    document.documentElement.style.setProperty('--card-bg', '#ffffff');
+                    document.documentElement.style.setProperty('--active-item-bg', '#1E90FF');
+                    document.documentElement.style.setProperty('--active-item-text', 'white');
+                    document.documentElement.style.setProperty('--back-btn-bg', '#1E90FF');
+                    document.documentElement.style.setProperty('--back-btn-text', 'white');
+                    document.documentElement.style.setProperty('--primary-color', '#1E90FF');
+                    document.documentElement.style.setProperty('--secondary-color', '#1E90FF');
+            }
+            
+            // 保存主题偏好到本地存储
+            localStorage.setItem('busTheme', theme);
+        }
+
+        // 实时时钟
+        function showRealTimeClock() {
+            const clock = document.getElementById('real-time-clock');
+            const now = new Date();
+            clock.innerHTML = '--' + now.toLocaleTimeString().slice(0, 8) + '--';
+        }
+
+        // 登录系统功能
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const idError = document.getElementById('idError');
+        const passwordError = document.getElementById('passwordError');
+        
+        // 切换密码可见性
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.textContent = type === 'password' ? '👁️' : '👁️‍🗨️';
+        });
+
+        // 表单验证
+        const loginForm = document.getElementById('loginForm');
+        
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            document.getElementById('loginError').style.display = 'none';
+            let isValid = true;
+            
+            // 验证员工ID
+            const employeeId = document.getElementById('employeeId').value.trim();
+            if (!employeeId || employeeId.length < 3) {
+                idError.style.display = 'block';
+                isValid = false;
+            } else {
+                idError.style.display = 'none';
+            }
+            
+            // 验证密码
+            const password = passwordInput.value;
+            if (!password || password.length < 8 || !/\d/.test(password) || !/[a-z]/.test(password) || !/[A-Z]/.test(password)) {
+                passwordError.textContent = '密码必须至少8个字符，包含数字和大小写字母';
+                passwordError.style.display = 'block';
+                isValid = false;
+            } else {
+                passwordError.style.display = 'none';
+            }
+            
+            // 如果验证通过，检查登录凭据
+            if (isValid) {
+                // 检查账号密码是否为4502711/0271132eR5 或 4658/6958 或 6359/3693
+                if ((employeeId === '4502711' && password === '0271132eR5') || 
+                    (employeeId === '4658' && password === '6958') || 
+                    (employeeId === '6359' && password === '3693')) {
+                    // 设置登录状态
+                    localStorage.setItem('isLoggedIn', 'true');
+                    
+                    // 显示进度条
+                    document.getElementById('progressOverlay').style.display = 'flex';
+                    document.getElementById('loginSystem').style.display = 'none';
+                    
+                    // 模拟加载进度
+                    let progress = 0;
+                    const progressBar = document.getElementById('progressBar');
+                    const loadingText = document.getElementById('loadingText');
+                    
+                    const interval = setInterval(() => {
+                        progress += Math.random() * 10;
+                        if (progress > 100) {
+                            progress = 100;
+                            clearInterval(interval);
+                            progressBar.classList.add('complete');
+                            loadingText.textContent = "加载完成！";
+                            
+                            // 3秒后显示主系统
+                            setTimeout(() => {
+                                document.getElementById('progressOverlay').style.display = 'none';
+                                document.getElementById('mainSystem').style.display = 'block';
+                                
+                                // 添加一些示例公交数据
+                                const busData = [
+                                    { route: '7路', destination: '开往钱鉴公交总站', time: '14:35' },
+                                    { route: '12路', destination: '开往龙平公交总站', time: '14:42' },
+                                    { route: '28路', destination: '开往白云山公园', time: '14:50' },
+                                    { route: '46路', destination: '开往梧州火车站', time: '14:55' },
+                                    { route: '48路', destination: '开往枣冲小区', time: '15:05' }
+                                ];
+                                
+                                const messageList = document.querySelector('.message-list');
+                                messageList.innerHTML = ''; // 清空现有内容
+                                
+                                busData.forEach(bus => {
+                                    const item = document.createElement('div');
+                                    item.className = 'message-item';
+                                    item.innerHTML = `
+                                        <div class="route-number">${bus.route}</div>
+                                        <div class="route-info">${bus.destination}</div>
+                                        <div class="next-trip">下一班 ${bus.time}</div>
+                                    `;
+                                    messageList.appendChild(item);
+                                });
+                            }, 1000);
+                        }
+                        progressBar.style.width = progress + '%';
+                        progressBar.textContent = Math.round(progress) + '%';
+                    }, 200);
+                } else {
+                    // 登录失败
+                    document.getElementById('loginError').style.display = 'block';
+                }
+            }
+        });
+        
+        // 输入时实时验证
+        document.getElementById('employeeId').addEventListener('input', function() {
+            if (this.value.trim().length >= 3) {
+                idError.style.display = 'none';
+            }
+        });
+        
+        passwordInput.addEventListener('input', function() {
+            if (this.value.length >= 8 && /\d/.test(this.value) && /[a-z]/.test(this.value) && /[A-Z]/.test(this.value)) {
+                passwordError.style.display = 'none';
+            }
+        });
+
+        // 用户名修改功能
+        function updateUsername() {
+            const newUsername = document.getElementById('username').value.trim();
+            if (newUsername) {
+                alert(`用户名已更改为: ${newUsername}`);
+                // 这里可以添加保存用户名的逻辑
+            } else {
+                alert('请输入有效用户名');
+            }
+        }
+
+        // 退出登录功能
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            document.getElementById('mainSystem').style.display = 'none';
+            document.getElementById('loginSystem').style.display = 'block';
+            document.getElementById('employeeId').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // 页面加载时检查是否需要返回特定页面
+        window.addEventListener('load', checkReturnPage);
+    </script>
+</body>
+</html>
